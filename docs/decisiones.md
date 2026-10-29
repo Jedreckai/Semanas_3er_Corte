@@ -130,3 +130,32 @@ Los experimentos de `BancoDeListas` miden rendimiento (movimientos, saltos,
 tiempo). Son Ãºtiles para observar tendencias algorÃ­tmicas pero no sustituyen
 las pruebas automatizadas, que comprueban la correcciÃ³n del comportamiento para
 casos de entrada concretos y detectan regresiones cuando el cÃ³digo cambia.
+
+## 13. Resultados experimentales medidos (BancoDeListas)
+
+Mediciones obtenidas en el entorno de ejecución local:
+
+### Experimento 3: Insertar al inicio
+| Lecturas | Arreglo: Movimientos | Arreglo: ms | Lista: Saltos | Lista: ms |
+| :--- | :--- | :--- | :--- | :--- |
+| 10.000 | 49.995.000 | 217 ms | 0 | 1 ms |
+| 50.000 | 1.249.975.000 | 2.826 ms | 0 | 62 ms |
+| 100.000 | 4.999.950.000 | 11.225 ms | 0 | 0 ms |
+
+**Conclusión:** Insertar al inicio en una lista enlazada es O(1) independiente del tamaño de entrada. En el arreglo escala como O(n²), alcanzando casi 5 mil millones de desplazamientos para 100k lecturas.
+
+### Experimento 4: Recorrer por posición (obtener(i))
+| Lecturas | Arreglo: Accesos | Arreglo: ms | Lista: Saltos | Lista: ms |
+| :--- | :--- | :--- | :--- | :--- |
+| 1.000 | 1.000 | 1 ms | 499.500 | 2 ms |
+| 10.000 | 10.000 | 1 ms | 49.995.000 | 144 ms |
+| 50.000 | 50.000 | 0 ms | 1.249.975.000 | 2.203 ms |
+
+**Conclusión:** Recorrer una lista llamando repetidamente a obtener(i) acumula O(n²) saltos porque cada llamada reanuda desde el primer nodo. La forma adecuada de recorrer la lista es mediante un iterador o puntero ctual = actual.getSiguiente().
+
+### Experimento 5: Búsqueda binaria sobre una lista
+- Tamaño de muestra: 50.000 lecturas ordenadas.
+- Búsqueda Lineal: 50.000 saltos entre nodos.
+- Búsqueda Binaria: 749.990 saltos entre nodos.
+
+**Conclusión:** Aunque la búsqueda binaria realiza únicamente 16 comparaciones lógicas, el costo acumulado de desplazar el puntero hasta el punto medio en una lista enlazada supera por un orden de magnitud completo al recorrido lineal continuo. No debe aplicarse búsqueda binaria indexada sobre listas enlazadas simples.
